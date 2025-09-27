@@ -1,0 +1,18 @@
+@model Forum.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Вход";
+}
+<h2>Вход</h2>
+<form method="post">
+    <div>
+        <label>Имя пользователя или Email</label>
+        <input asp-for="Login" />
+        <span asp-validation-for="Login"></span>
+    </div>
+    <div>
+        <label>Пароль</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div><button type="submit">Войти</button></div>
+</form>

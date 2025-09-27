@@ -1,0 +1,12 @@
+@model Forum.Models.Post
+
+<div class="post">
+    <div class="post-left">
+        <img src="@Model.Author?.AvatarPath" width="48" height="48" style="border-radius:50%;" />
+        <div><a href="/Profile/Index?username=@Model.Author?.UserName">@Model.Author?.UserName</a></div>
+    </div>
+    <div class="post-body">
+        <div class="post-meta">@Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+        <div class="post-content">@Model.Content</div>
+    </div>
+</div>

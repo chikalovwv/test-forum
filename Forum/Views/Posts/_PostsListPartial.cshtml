@@ -1,0 +1,6 @@
+@model System.Collections.Generic.IEnumerable<Forum.Models.Post>
+
+@foreach (Forum.Models.Post post in Model)
+{
+    @Html.Partial("~/Views/Posts/_PostPartial.cshtml", post)
+}

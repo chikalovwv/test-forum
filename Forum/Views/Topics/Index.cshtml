@@ -1,0 +1,43 @@
+@model System.Collections.Generic.List<Forum.Models.Topic>
+@{
+    int currentPage = (int)(ViewBag.Page ?? 1);
+    int totalPages = (int)(ViewBag.TotalPages ?? 1);
+    ViewData["Title"] = "Темы";
+}
+
+<h2>Темы</h2>
+
+<table class="topics-table">
+    <thead>
+    <tr><th>Тема</th><th>Дата</th><th>Автор</th><th>Ответов</th></tr>
+    </thead>
+    <tbody>
+    @foreach (Forum.Models.Topic topic in Model)
+    {
+        <tr onclick="location.href='@Url.Action("Details","Topics", new { id = topic.Id })'" style="cursor:pointer;">
+            <td>@topic.Title</td>
+            <td>@topic.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+            <td>
+                @if (topic.Author != null)
+                {
+                    <img src="@topic.Author.AvatarPath" width="32" height="32" style="border-radius:50%;vertical-align:middle;" />
+                    @topic.Author.UserName
+                }
+            </td>
+            <td>@(topic.Posts?.Count ?? 0)</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div class="pager">
+    @if (currentPage > 1)
+    {
+        <a href="@Url.Action("Index", new { page = currentPage - 1 })">Назад</a>
+    }
+    <span>Стр. @currentPage из @totalPages</span>
+    @if (currentPage < totalPages)
+    {
+        <a href="@Url.Action("Index", new { page = currentPage + 1 })">Вперёд</a>
+    }
+</div>

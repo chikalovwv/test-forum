@@ -1,0 +1,108 @@
+@model Forum.Models.Topic
+@{
+    int currentPage = (int)(ViewBag.Page ?? 1);
+    int totalPages = (int)(ViewBag.TotalPages ?? 1);
+    ViewData["Title"] = Model.Title;
+}
+
+<h2>@Model.Title</h2>
+<div class="topic-content">@Model.Content</div>
+<div class="topic-meta">Автор: @if (Model.Author != null) { <text>@Model.Author.UserName</text> } | Создано: @Model.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</div>
+<hr />
+
+<div id="postsList">
+    @Html.Partial("~/Views/Posts/_PostsListPartial.cshtml", Model.Posts)
+</div>
+
+<div class="pagination-controls">
+    <button id="prevPage">Назад</button>
+    <span id="pageInfo">Стр. @currentPage из @totalPages</span>
+    <button id="nextPage">Вперёд</button>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <hr />
+    <div id="answerBlock">
+        <form id="postForm">
+            <textarea id="postContent" rows="4" style="width:100%;"></textarea>
+            <br />
+            <button type="submit">Отправить</button>
+        </form>
+        <button id="openReply">Ответить (в модальном окне)</button>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        var topicId = @Model.Id;
+        var currentPage = @currentPage;
+        var totalPages = @totalPages;
+
+        function updatePageInfo() {
+            $("#pageInfo").text("Стр. " + currentPage + " из " + totalPages);
+        }
+
+        function loadPage(page) {
+            if (page < 1 || page > totalPages) { return; }
+            $.get("@Url.Action("LoadPosts", "Topics")", { topicId: topicId, page: page }, function (data) {
+                $("#postsList").html(data);
+                currentPage = page;
+                updatePageInfo();
+                // скролл к началу списка
+                window.scrollTo(0, $("#postsList").offset().top - 50);
+            });
+        }
+
+        $(function () {
+            updatePageInfo();
+
+            $("#prevPage").click(function () {
+                if (currentPage > 1) {
+                    loadPage(currentPage - 1);
+                }
+            });
+
+            $("#nextPage").click(function () {
+                if (currentPage < totalPages) {
+                    loadPage(currentPage + 1);
+                }
+            });
+
+            $("#postForm").submit(function (e) {
+                e.preventDefault();
+                var content = $("#postContent").val();
+                $.post("@Url.Action("Create", "Posts")", { topicId: topicId, content: content }, function (partialHtml) {
+                    // После отправки перейти на последнюю страницу и подгрузить её
+                    loadPage(totalPages);
+                    $("#postContent").val("");
+                }).fail(function (xhr) {
+                    alert("Ошибка: " + xhr.responseText);
+                });
+            });
+
+            // Модальное окно - простой вариант (динамически)
+            $("#openReply").click(function () {
+                var modal = $("<div id='replyModal' style='position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;'></div>");
+                var box = $("<div style='background:#fff;padding:15px;width:80%;max-width:600px;'></div>");
+                var ta = $("<textarea id='modalContent' rows='6' style='width:100%'></textarea>");
+                var send = $("<button>Отправить</button>");
+                var close = $("<button style='margin-left:10px;'>Закрыть</button>");
+                box.append(ta).append("<br/>").append(send).append(close);
+                modal.append(box);
+                $("body").append(modal);
+
+                close.click(function () { modal.remove(); });
+
+                send.click(function () {
+                    string = ta.val();
+                    $.post("@Url.Action("Create", "Posts")", { topicId: topicId, content: string }, function () {
+                        loadPage(totalPages);
+                        modal.remove();
+                    }).fail(function (xhr) {
+                        alert("Ошибка: " + xhr.responseText);
+                    });
+                });
+            });});
+    </script>
+}

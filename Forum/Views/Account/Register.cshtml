@@ -1,0 +1,37 @@
+@model Forum.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+<h2>Регистрация</h2>
+<form method="post" enctype="multipart/form-data">
+    <div>
+        <label>Имя пользователя</label>
+        <input asp-for="UserName" />
+        <span asp-validation-for="UserName"></span>
+    </div>
+    <div>
+        <label>Email</label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div>
+        <label>Дата рождения</label>
+        <input asp-for="DateOfBirth" type="date" />
+        <span asp-validation-for="DateOfBirth"></span>
+    </div>
+    <div>
+        <label>Аватар</label>
+        <input asp-for="Avatar" type="file" accept="image/*" />
+    </div>
+    <div>
+        <label>Пароль</label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <div>
+        <label>Подтвердите пароль</label>
+        <input asp-for="ConfirmPassword" type="password" />
+        <span asp-validation-for="ConfirmPassword"></span>
+    </div>
+    <div><button type="submit">Зарегистрироваться</button></div>
+</form>

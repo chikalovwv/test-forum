@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Forum</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<header>
+    <nav>
+        <a href="/">Главная</a> |
+        <a href="/Topics/Create">Создать тему</a> |
+        @if (User.Identity.IsAuthenticated)
+        {
+            <text>
+                <a href="/Account/Logout" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">Выход</a> |
+                <a href="/Profile/Index?username=@User.Identity.Name">Кабинет</a>
+                <form id="logoutForm" method="post" action="/Account/Logout" style="display:none;"></form>
+            </text>
+        }
+        else
+        {
+            <text>
+                <a href="/Account/Login">Вход</a> |
+                <a href="/Account/Register">Регистрация</a>
+            </text>
+        }
+    </nav>
+</header>
+<main>
+    @RenderBody()
+</main>
+@RenderSection("Scripts", required: false)
+</body>
+</html>
